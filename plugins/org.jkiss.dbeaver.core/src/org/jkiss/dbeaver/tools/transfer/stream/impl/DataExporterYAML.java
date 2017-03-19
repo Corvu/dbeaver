@@ -100,7 +100,7 @@ public class DataExporterYAML extends StreamExporterAbstract {
             out.write("\n");
         }
         rowNum++;
-        out.write("  - {");
+        out.write("  - ");
         for (int i = 0; i < row.length; i++) {
             DBDAttributeBinding column = columns.get(i);
             String columnName = column.getName();
@@ -117,9 +117,7 @@ public class DataExporterYAML extends StreamExporterAbstract {
                     if (cs != null) {
                         if (ContentUtils.isTextContent(content)) {
                             try (Reader in = cs.getContentReader()) {
-                                //out.write("\"");
                                 writeCellValue(in);
-                                //out.write("\"");
                             }
                         } else {
                             getSite().writeBinaryData(cs);
@@ -139,20 +137,15 @@ public class DataExporterYAML extends StreamExporterAbstract {
                 }
             }
             if (i < row.length - 1) {
-                out.write(", ");
+                out.write("\n    ");
             }
-            //out.write("\n");
         }
-        out.write("}");
+        out.write("\n");
     }
 
     @Override
     public void exportFooter(DBRProgressMonitor monitor) throws IOException
     {
-        //out.write("\n]");
-        //if (printTableName) {
-        //    out.write("}");
-        //}
         out.write("\n");
     }
 
