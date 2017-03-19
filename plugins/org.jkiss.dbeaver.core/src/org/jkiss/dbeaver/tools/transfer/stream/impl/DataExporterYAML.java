@@ -88,24 +88,23 @@ public class DataExporterYAML extends StreamExporterAbstract {
     private void printHeader()
     {
         if (printTableName) {
-            out.write("{\n");
-            out.write("\"" + tableName + "\": ");
+            out.write(tableName + ":");
         }
-        out.write("[\n");
+        out.write("\n");
     }
 
     @Override
     public void exportRow(DBCSession session, Object[] row) throws DBException, IOException
     {
         if (rowNum > 0) {
-            out.write(",\n");
+            out.write("\n");
         }
         rowNum++;
-        out.write("\t{\n");
+        out.write("  - {");
         for (int i = 0; i < row.length; i++) {
             DBDAttributeBinding column = columns.get(i);
             String columnName = column.getName();
-            out.write("\t\t\"" + escapeJsonString(columnName) + "\" : ");
+            out.write(escapeYamlString(columnName) + ": ");
             Object cellValue = row[i];
             if (DBUtils.isNullValue(cellValue)) {
                 writeTextCell(null);
@@ -118,9 +117,9 @@ public class DataExporterYAML extends StreamExporterAbstract {
                     if (cs != null) {
                         if (ContentUtils.isTextContent(content)) {
                             try (Reader in = cs.getContentReader()) {
-                                out.write("\"");
+                                //out.write("\"");
                                 writeCellValue(in);
-                                out.write("\"");
+                                //out.write("\"");
                             }
                         } else {
                             getSite().writeBinaryData(cs);
@@ -140,27 +139,27 @@ public class DataExporterYAML extends StreamExporterAbstract {
                 }
             }
             if (i < row.length - 1) {
-                out.write(",");
+                out.write(", ");
             }
-            out.write("\n");
+            //out.write("\n");
         }
-        out.write("\t}");
+        out.write("}");
     }
 
     @Override
     public void exportFooter(DBRProgressMonitor monitor) throws IOException
     {
-        out.write("\n]");
-        if (printTableName) {
-            out.write("}");
-        }
+        //out.write("\n]");
+        //if (printTableName) {
+        //    out.write("}");
+        //}
         out.write("\n");
     }
 
     private void writeTextCell(@Nullable String value)
     {
         if (value != null) {
-            out.write("\"" + escapeJsonString(value) + "\"");
+            out.write(escapeYamlString(value));
         } else {
             out.write("null");
         }
@@ -175,11 +174,11 @@ public class DataExporterYAML extends StreamExporterAbstract {
             if (count <= 0) {
                 break;
             }
-            out.write(escapeJsonString(new String(buffer, 0, count)));
+            out.write(escapeYamlString(new String(buffer, 0, count)));
         }
     }
 
-    private static String escapeJsonString(String str) {
+    private static String escapeYamlString(String str) {
         if (str == null) {
             return null;
         }

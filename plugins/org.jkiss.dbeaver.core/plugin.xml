@@ -2855,15 +2855,15 @@
                 </propertyGroup>
             </processor>
             <processor
-                id="stream.json"
+                id="stream.yaml"
                 class="org.jkiss.dbeaver.tools.transfer.stream.impl.DataExporterYAML"
                 description="%dataTransfer.processor.yaml.description"
-                icon="icons/misc/json.png"
+                icon="icons/misc/yaml.png"
                 label="%dataTransfer.processor.yaml.name">
                 <propertyGroup label="General">
                     <property id="printTableName" label="Print table name" type="boolean" defaultValue="true"/>
                     <property id="formatDateISO" label="Format dates in ISO 8601" type="boolean" defaultValue="true"/>
-                    <property id="extension" label="File extension" defaultValue="json"/>
+                    <property id="extension" label="File extension" defaultValue="yml"/>
                 </propertyGroup>
             </processor>
             <processor
