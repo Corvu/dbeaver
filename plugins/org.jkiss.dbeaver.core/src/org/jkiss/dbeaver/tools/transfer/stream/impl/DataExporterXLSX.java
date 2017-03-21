@@ -38,8 +38,13 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.List;
 
+// Apache POI is an API for Microsoft Documents
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import java.io.FileOutputStream;
+
 /**
- * XML Exporter
+ * XLSX Exporter
  */
 public class DataExporterXLSX extends StreamExporterAbstract {
 
@@ -52,24 +57,43 @@ public class DataExporterXLSX extends StreamExporterAbstract {
     {
         super.init(site);
         out = site.getWriter();
+        
+        // XLSX creation
+        Workbook wb = new HSSFWorkbook();	// new workbook
+        CreationHelper createHelper = wb.getCreationHelper();
+        Sheet sheet = wb.createSheet("new sheet");	// add sheet to workbook
+        
+        try {
+        	FileOutputStream fileOut = new FileOutputStream("workbook.xlsx");
+            wb.write(fileOut);
+            fileOut.close();
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+        
     }
 
     @Override
     public void dispose()
     {
+        /*
         out = null;
         super.dispose();
+        */
     }
 
     @Override
     public void exportHeader(DBCSession session) throws DBException, IOException
     {
+        /*
         columns = getSite().getAttributes();
         printHeader();
+        */
     }
 
     private void printHeader()
     {
+        /*
         out.write("<?xml version=\"1.0\" ?>\n");
         tableName = escapeXmlElementName(getSite().getSource().getName());
         out.write("<!DOCTYPE " + tableName + " [\n");
@@ -92,11 +116,13 @@ public class DataExporterXLSX extends StreamExporterAbstract {
         }
         out.write("]>\n");
         out.write("<" + tableName + ">\n");
+        */
     }
 
     @Override
     public void exportRow(DBCSession session, Object[] row) throws DBException, IOException
     {
+        /*
         out.write("  <DATA_RECORD>\n");
         for (int i = 0; i < row.length; i++) {
             DBDAttributeBinding column = columns.get(i);
@@ -129,24 +155,28 @@ public class DataExporterXLSX extends StreamExporterAbstract {
             out.write("</" + columnName + ">\n");
         }
         out.write("  </DATA_RECORD>\n");
+        */
     }
 
     @Override
     public void exportFooter(DBRProgressMonitor monitor) throws IOException
     {
-        out.write("</" + tableName + ">\n");
+        //out.write("</" + tableName + ">\n");
     }
 
     private void writeTextCell(@Nullable String value)
     {
+        /*
         if (value != null) {
             value = value.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;");
             out.write(value);
         }
+        */
     }
 
     private void writeImageCell(File file) throws DBException
     {
+        /*
         if (file != null && file.exists()) {
             Image image = null;
             try {
@@ -161,10 +191,12 @@ public class DataExporterXLSX extends StreamExporterAbstract {
                 out.write(imagePath);
             }
         }
+        */
     }
 
     private void writeCellValue(Reader reader) throws IOException
     {
+    	/*
         // Copy reader
         char buffer[] = new char[2000];
         for (;;) {
@@ -185,9 +217,10 @@ public class DataExporterXLSX extends StreamExporterAbstract {
                 }
             }
         }
+        */
     }
 
-    private String escapeXmlElementName(String name) {
-        return name.replaceAll("[^\\p{Alpha}\\p{Digit}]+","_");
-    }
+    /*private String escapeXmlElementName(String name) {
+        //return name.replaceAll("[^\\p{Alpha}\\p{Digit}]+","_");
+    }*/
 }
