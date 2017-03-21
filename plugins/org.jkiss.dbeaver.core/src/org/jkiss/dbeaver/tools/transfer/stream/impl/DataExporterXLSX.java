@@ -18,16 +18,16 @@
  */
 package org.jkiss.dbeaver.tools.transfer.stream.impl;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 
 /**
- * XLS Exporter
+ * XLSX Exporter
  */
-public class DataExporterXLS extends AbstractDataExporterExcel {
+public class DataExporterXLSX extends AbstractDataExporterExcel {
 
 	protected Workbook initWorkbook() {
-		return new HSSFWorkbook();	// new workbook
+		return new XSSFWorkbook();	// new workbook
 	}
 
 }
