@@ -2880,7 +2880,7 @@
                 id="stream.xlsx"
                 class="org.jkiss.dbeaver.tools.transfer.stream.impl.DataExporterXLSX"
                 description="%dataTransfer.processor.xlsx.description"
-                icon="icons/misc/xml.png"
+                icon="icons/misc/xlsx.png"
                 label="%dataTransfer.processor.xlsx.name">
                 <propertyGroup label="General">
                     <property id="extension" label="File extension" defaultValue="xlsx"/>
