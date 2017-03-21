@@ -114,6 +114,7 @@ public class DataExporterSQL extends StreamExporterAbstract {
         SQLDialect.MultiValueInsertMode insertMode = rowsInStatement == 1 ? SQLDialect.MultiValueInsertMode.NOT_SUPPORTED : getMultiValueInsertMode();
         int columnsSize = columns.size();
         if(update){
+        	insertMode = SQLDialect.MultiValueInsertMode.NOT_SUPPORTED;
             if (insertMode == SQLDialect.MultiValueInsertMode.NOT_SUPPORTED || rowCount % rowsInStatement == 0) {
                 sqlBuffer.setLength(0);
                 sqlBuffer.append("UPDATE ").append(tableName).append(rowDelimiter).append("SET ");
@@ -173,6 +174,7 @@ public class DataExporterSQL extends StreamExporterAbstract {
                 }
  
             }
+            out.write(rowDelimiter);
             out.write("WHERE ");
             out.write(DBUtils.getQuotedIdentifier(columns.get(0)));
             out.write(" = ");
