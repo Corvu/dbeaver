@@ -2867,13 +2867,13 @@
                 </propertyGroup>
             </processor>
             <processor
-                id="stream.xlsx"
-                class="org.jkiss.dbeaver.tools.transfer.stream.impl.DataExporterXLSX"
-                description="%dataTransfer.processor.xlsx.description"
+                id="stream.xls"
+                class="org.jkiss.dbeaver.tools.transfer.stream.impl.DataExporterXLS"
+                description="%dataTransfer.processor.xls.description"
                 icon="icons/misc/xml.png"
-                label="%dataTransfer.processor.xlsx.name">
+                label="%dataTransfer.processor.xls.name">
                 <propertyGroup label="General">
-                    <property id="extension" label="File extension" defaultValue="xlsx"/>
+                    <property id="extension" label="File extension" defaultValue="xls"/>
                 </propertyGroup>
             </processor>
             <processor
