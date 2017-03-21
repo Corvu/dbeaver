@@ -56,6 +56,7 @@ public class DataExporterXLS extends StreamExporterAbstract {
     Workbook wb;
     CreationHelper createHelper;
     Sheet sheet;
+    int rowNum = 1;
 
     @Override
     public void init(IStreamDataExporterSite site) throws DBException
@@ -63,11 +64,6 @@ public class DataExporterXLS extends StreamExporterAbstract {
         super.init(site);
         out = site.getWriter();
         
-        
-        /*
-        super.init(site);
-        out = site.getWriter();
-        */
     }
 
     @Override
@@ -102,11 +98,7 @@ public class DataExporterXLS extends StreamExporterAbstract {
             row1.createCell(i).setCellValue(colName);
         }
         
-        try {
-            wb.write(getSite().getOutputStream());
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
+        
     	
         /*
         out.write("<?xml version=\"1.0\" ?>\n");
@@ -137,6 +129,42 @@ public class DataExporterXLS extends StreamExporterAbstract {
     @Override
     public void exportRow(DBCSession session, Object[] row) throws DBException, IOException
     {
+    	Row rowOut = sheet.createRow(rowNum);
+    	rowNum++;
+    	
+    	for (int i = 0; i < row.length; i++) {
+    		Cell currentCell = rowOut.createCell(i);
+    		
+    		DBDAttributeBinding column = columns.get(i);
+            if (DBUtils.isNullValue(row[i])) {
+                writeTextCell(null, null);
+            } else if (row[i] instanceof DBDContent) {
+                // Content
+                // Inline textual content and handle binaries in some special way
+                DBDContent content = (DBDContent)row[i];
+                
+                try {
+                    DBDContentStorage cs = content.getContents(session.getProgressMonitor());
+                    if (cs != null) {
+                        if (ContentUtils.isTextContent(content)) {
+                            try (Reader reader = cs.getContentReader()) {
+                                writeCellValue(reader, currentCell);
+                            }
+                        } else {
+                            //getSite().writeBinaryData(cs, currentCell);
+                        }
+                    }
+                }
+                finally {
+                    content.release();
+                }
+            } else {
+               writeTextCell(super.getValueDisplayString(column, row[i]), currentCell);
+            }
+    		
+    		
+    	}
+    	
         /*
         out.write("  <DATA_RECORD>\n");
         for (int i = 0; i < row.length; i++) {
@@ -176,17 +204,20 @@ public class DataExporterXLS extends StreamExporterAbstract {
     @Override
     public void exportFooter(DBRProgressMonitor monitor) throws IOException
     {
+    	try {
+            wb.write(getSite().getOutputStream());
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
         //out.write("</" + tableName + ">\n");
     }
 
-    private void writeTextCell(@Nullable String value)
+    private void writeTextCell(@Nullable String value, Cell currentCell)
     {
-        /*
-        if (value != null) {
-            value = value.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;");
-            out.write(value);
-        }
-        */
+    	if (value != null) {
+    		value = value.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;");
+    		currentCell.setCellValue(value);
+    	}
     }
 
     private void writeImageCell(File file) throws DBException
@@ -209,9 +240,9 @@ public class DataExporterXLS extends StreamExporterAbstract {
         */
     }
 
-    private void writeCellValue(Reader reader) throws IOException
+    private void writeCellValue(Reader reader, Cell currentCell) throws IOException
     {
-    	/*
+    	String value = "";
         // Copy reader
         char buffer[] = new char[2000];
         for (;;) {
@@ -221,18 +252,20 @@ public class DataExporterXLS extends StreamExporterAbstract {
             }
             for (int i = 0; i < count; i++) {
                 if (buffer[i] == '<') {
-                    out.write("&lt;");
+                    value.concat("&lt;");
                 }
                 else if (buffer[i] == '>') {
-                    out.write("&gt;");
+                	value.concat("&gt;");
                 } else if (buffer[i] == '&') {
-                    out.write("&amp;");
+                	value.concat("&amp;");
                 } else {
-                    out.write(buffer[i]);
+                	
+                	value.concat(String.valueOf(buffer[i]));
                 }
             }
         }
-        */
+      currentCell.setCellValue(value);
+        
     }
 
     /*private String escapeXmlElementName(String name) {
