@@ -18,22 +18,31 @@
  */
 package org.jkiss.dbeaver.tools.transfer.stream.impl;
 
+import org.jkiss.code.NotNull;
 import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.DBException;
+import org.jkiss.dbeaver.model.DBPDataSource;
 import org.jkiss.dbeaver.model.DBUtils;
 import org.jkiss.dbeaver.model.data.DBDAttributeBinding;
 import org.jkiss.dbeaver.model.data.DBDContent;
 import org.jkiss.dbeaver.model.data.DBDContentStorage;
 import org.jkiss.dbeaver.model.exec.DBCSession;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
+import org.jkiss.dbeaver.model.sql.SQLDataSource;
 import org.jkiss.dbeaver.tools.transfer.stream.IStreamDataExporterSite;
 import org.jkiss.dbeaver.utils.ContentUtils;
+import org.jkiss.dbeaver.utils.GeneralUtils;
+import org.jkiss.utils.Base64;
 import org.jkiss.utils.CommonUtils;
+import org.jkiss.utils.IOUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.List;
@@ -41,7 +50,6 @@ import java.util.List;
 // Apache POI is an API for Microsoft Documents
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import java.io.FileOutputStream;
 
 /**
  * XLS Exporter
@@ -98,32 +106,6 @@ public class DataExporterXLS extends StreamExporterAbstract {
             row1.createCell(i).setCellValue(colName);
         }
         
-        
-    	
-        /*
-        out.write("<?xml version=\"1.0\" ?>\n");
-        tableName = escapeXmlElementName(getSite().getSource().getName());
-        out.write("<!DOCTYPE " + tableName + " [\n");
-        out.write("  <!ELEMENT " + tableName + " (DATA_RECORD*)>\n");
-        out.write("  <!ELEMENT DATA_RECORD (");
-        int columnsSize = columns.size();
-        for (int i = 0; i < columnsSize; i++) {
-            String colName = columns.get(i).getLabel();
-            if (CommonUtils.isEmpty(colName)) {
-                colName = columns.get(i).getName();
-            }
-            out.write(escapeXmlElementName(colName) + "?");
-            if (i < columnsSize - 1) {
-                out.write(",");
-            }
-        }
-        out.write(")+>\n");
-        for (int i = 0; i < columnsSize; i++) {
-            out.write("  <!ELEMENT " + escapeXmlElementName(columns.get(i).getName()) + " (#PCDATA)>\n");
-        }
-        out.write("]>\n");
-        out.write("<" + tableName + ">\n");
-        */
     }
 
     @Override
@@ -164,41 +146,6 @@ public class DataExporterXLS extends StreamExporterAbstract {
     		
     		
     	}
-    	
-        /*
-        out.write("  <DATA_RECORD>\n");
-        for (int i = 0; i < row.length; i++) {
-            DBDAttributeBinding column = columns.get(i);
-            String columnName = escapeXmlElementName(column.getName());
-            out.write("    <" + columnName + ">");
-            if (DBUtils.isNullValue(row[i])) {
-                writeTextCell(null);
-            } else if (row[i] instanceof DBDContent) {
-                // Content
-                // Inline textual content and handle binaries in some special way
-                DBDContent content = (DBDContent)row[i];
-                try {
-                    DBDContentStorage cs = content.getContents(session.getProgressMonitor());
-                    if (cs != null) {
-                        if (ContentUtils.isTextContent(content)) {
-                            try (Reader reader = cs.getContentReader()) {
-                                writeCellValue(reader);
-                            }
-                        } else {
-                            getSite().writeBinaryData(cs);
-                        }
-                    }
-                }
-                finally {
-                    content.release();
-                }
-            } else {
-                writeTextCell(super.getValueDisplayString(column, row[i]));
-            }
-            out.write("</" + columnName + ">\n");
-        }
-        out.write("  </DATA_RECORD>\n");
-        */
     }
 
     @Override
@@ -209,7 +156,6 @@ public class DataExporterXLS extends StreamExporterAbstract {
         } catch (Exception e) {
         	e.printStackTrace();
         }
-        //out.write("</" + tableName + ">\n");
     }
 
     private void writeTextCell(@Nullable String value, Cell currentCell)
@@ -220,30 +166,9 @@ public class DataExporterXLS extends StreamExporterAbstract {
     	}
     }
 
-    private void writeImageCell(File file) throws DBException
-    {
-        /*
-        if (file != null && file.exists()) {
-            Image image = null;
-            try {
-                image = ImageIO.read(file);
-            } catch (IOException e) {
-                throw new DBException("Can't read an exported image " + image, e);
-            }
-
-            if (image != null) {
-                String imagePath = file.getAbsolutePath();
-                imagePath = "files/" + imagePath.substring(imagePath.lastIndexOf(File.separator));
-                out.write(imagePath);
-            }
-        }
-        */
-    }
-
     private void writeCellValue(Reader reader, Cell currentCell) throws IOException
     {
     	String value = "";
-        // Copy reader
         char buffer[] = new char[2000];
         for (;;) {
             int count = reader.read(buffer);
@@ -268,7 +193,4 @@ public class DataExporterXLS extends StreamExporterAbstract {
         
     }
 
-    /*private String escapeXmlElementName(String name) {
-        //return name.replaceAll("[^\\p{Alpha}\\p{Digit}]+","_");
-    }*/
 }
