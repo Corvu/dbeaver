@@ -44,32 +44,49 @@ import org.apache.poi.ss.usermodel.*;
 import java.io.FileOutputStream;
 
 /**
- * XLSX Exporter
+ * XLS Exporter
  */
-public class DataExporterXLSX extends StreamExporterAbstract {
+public class DataExporterXLS extends StreamExporterAbstract {
 
     private PrintWriter out;
     private List<DBDAttributeBinding> columns;
     private String tableName;
+    
+    // POI Variables
+    Workbook wb;
+    CreationHelper createHelper;
+    Sheet sheet;
 
     @Override
     public void init(IStreamDataExporterSite site) throws DBException
     {
-        super.init(site);
-        out = site.getWriter();
+        //super.init(site);
+        //out = site.getWriter();
         
-        // XLSX creation
-        Workbook wb = new HSSFWorkbook();	// new workbook
-        CreationHelper createHelper = wb.getCreationHelper();
-        Sheet sheet = wb.createSheet("new sheet");	// add sheet to workbook
+        // XLS creation
+        wb = new HSSFWorkbook();	// new workbook
+        createHelper = wb.getCreationHelper();
+        sheet = wb.createSheet("new sheet");	// add sheet to workbook
+        
+        //Row row = sheet.createRow((short)0);
+        //row.createCell(1).setCellValue("Hello World");
+        //tableName = getSite().getSource().getName();
+        /*int columnsSize = columns.size();
+        Row row = sheet.createRow((short)0);
+        for (int i = 0; i < columnsSize; i++) {
+            String colName = columns.get(i).getLabel();
+            //colName = columns.get(i).getName();
+            row.createCell(i).setCellValue(colName);
+        }*/
         
         try {
-        	FileOutputStream fileOut = new FileOutputStream("workbook.xlsx");
-            wb.write(fileOut);
-            fileOut.close();
+            wb.write(site.getOutputStream());
         } catch (Exception e) {
         	e.printStackTrace();
         }
+        
+        super.init(site);
+        out = site.getWriter();
         
     }
 
