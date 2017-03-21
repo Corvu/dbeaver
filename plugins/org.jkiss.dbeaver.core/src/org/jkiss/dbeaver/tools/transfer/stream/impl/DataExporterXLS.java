@@ -60,56 +60,54 @@ public class DataExporterXLS extends StreamExporterAbstract {
     @Override
     public void init(IStreamDataExporterSite site) throws DBException
     {
-        //super.init(site);
-        //out = site.getWriter();
-        
-        // XLS creation
-        wb = new HSSFWorkbook();	// new workbook
-        createHelper = wb.getCreationHelper();
-        sheet = wb.createSheet("new sheet");	// add sheet to workbook
-        
-        //Row row = sheet.createRow((short)0);
-        //row.createCell(1).setCellValue("Hello World");
-        //tableName = getSite().getSource().getName();
-        /*int columnsSize = columns.size();
-        Row row = sheet.createRow((short)0);
-        for (int i = 0; i < columnsSize; i++) {
-            String colName = columns.get(i).getLabel();
-            //colName = columns.get(i).getName();
-            row.createCell(i).setCellValue(colName);
-        }*/
-        
-        try {
-            wb.write(site.getOutputStream());
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
-        
         super.init(site);
         out = site.getWriter();
         
+        
+        /*
+        super.init(site);
+        out = site.getWriter();
+        */
     }
 
     @Override
     public void dispose()
     {
-        /*
         out = null;
-        super.dispose();
-        */
+        super.dispose();     
     }
 
     @Override
     public void exportHeader(DBCSession session) throws DBException, IOException
     {
-        /*
         columns = getSite().getAttributes();
         printHeader();
-        */
     }
 
     private void printHeader()
     {
+    	// XLS creation
+        wb = new HSSFWorkbook();	// new workbook
+        createHelper = wb.getCreationHelper();
+        sheet = wb.createSheet("new sheet");	// add sheet to workbook
+        
+        Row row = sheet.createRow((short)0);
+        row.createCell(1).setCellValue("Hello World");
+        tableName = getSite().getSource().getName();
+        int columnsSize = columns.size();
+        Row row1 = sheet.createRow((short)0);
+        for (int i = 0; i < columnsSize; i++) {
+            String colName = columns.get(i).getLabel();
+            colName = columns.get(i).getName();
+            row1.createCell(i).setCellValue(colName);
+        }
+        
+        try {
+            wb.write(getSite().getOutputStream());
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+    	
         /*
         out.write("<?xml version=\"1.0\" ?>\n");
         tableName = escapeXmlElementName(getSite().getSource().getName());
