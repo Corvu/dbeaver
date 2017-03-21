@@ -49,11 +49,13 @@ public class DataExporterSQL extends StreamExporterAbstract {
     private static final Log log = Log.getLog(DataExporterSQL.class);
 
     private static final String PROP_OMIT_SCHEMA = "omitSchema";
+    private static final String PROP_STATEMENT = "statement";
     private static final String PROP_ROWS_IN_STATEMENT = "rowsInStatement";
     private static final char STRING_QUOTE = '\'';
 
     private String rowDelimiter;
     private boolean omitSchema;
+    private boolean statement;
     private int rowsInStatement;
     private PrintWriter out;
     private String tableName;
@@ -69,6 +71,9 @@ public class DataExporterSQL extends StreamExporterAbstract {
         super.init(site);
         if (site.getProperties().containsKey(PROP_OMIT_SCHEMA)) {
             omitSchema = CommonUtils.toBoolean(site.getProperties().get(PROP_OMIT_SCHEMA));
+        }
+        if (site.getProperties().containsKey(PROP_STATEMENT)) {
+            statement = CommonUtils.toBoolean(site.getProperties().get(PROP_STATEMENT));
         }
         try {
             rowsInStatement = Integer.parseInt(String.valueOf(site.getProperties().get(PROP_ROWS_IN_STATEMENT)));
@@ -105,8 +110,125 @@ public class DataExporterSQL extends StreamExporterAbstract {
     @Override
     public void exportRow(DBCSession session, Object[] row) throws DBException, IOException
     {
+    	boolean update = statement;
         SQLDialect.MultiValueInsertMode insertMode = rowsInStatement == 1 ? SQLDialect.MultiValueInsertMode.NOT_SUPPORTED : getMultiValueInsertMode();
         int columnsSize = columns.size();
+        if(update){
+            if (insertMode == SQLDialect.MultiValueInsertMode.NOT_SUPPORTED || rowCount % rowsInStatement == 0) {
+                sqlBuffer.setLength(0);
+                sqlBuffer.append("UPDATE ").append(tableName).append(rowDelimiter).append("SET ");
+                out.write(sqlBuffer.toString());
+                for (int i = 1; i < columnsSize; i++) {
+                    DBDAttributeBinding column = columns.get(i);
+                    if (i > 1) {
+                        out.write(',');
+                    }
+                    out.write(DBUtils.getQuotedIdentifier(column));
+                    out.write(" = ");
+                    Object value = row[i];
+                    if (DBUtils.isNullValue(value)) {
+                        // just skip it
+                        out.write(SQLConstants.NULL_VALUE);
+                    } else if (row[i] instanceof DBDContent) {
+                        DBDContent content = (DBDContent)row[i];
+                        try {
+                            if (column.getValueHandler() instanceof DBDContentValueHandler) {
+                                ((DBDContentValueHandler) column.getValueHandler()).writeStreamValue(session.getProgressMonitor(), session.getDataSource(), column, content, out);
+                            } else {
+                                // Content
+                                // Inline textual content and handle binaries in some special way
+                                DBDContentStorage cs = content.getContents(session.getProgressMonitor());
+                                if (cs != null) {
+                                    if (ContentUtils.isTextContent(content)) {
+                                        try (Reader contentReader = cs.getContentReader()) {
+                                            writeStringValue(contentReader);
+                                        }
+                                    } else {
+                                        getSite().writeBinaryData(cs);
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            log.warn(e);
+                        } finally {
+                            content.release();
+                        }
+                    } else if (value instanceof File) {
+                        out.write("@");
+                        out.write(((File)value).getAbsolutePath());
+                    } else if (value instanceof String) {
+                        writeStringValue((String) value);
+                    } else if (value instanceof Number) {
+                        out.write(value.toString());
+                    } else if (value instanceof Date) {
+                        String stringValue = super.getValueDisplayString(column, row[i]);
+                        if (getSite().getExportFormat() != DBDDisplayFormat.NATIVE) {
+                            writeStringValue(stringValue);
+                        } else {
+                            out.write(stringValue);
+                        }
+                    } else {
+                        out.write(super.getValueDisplayString(column, row[i]));
+                    }
+                }
+ 
+            }
+            out.write("WHERE ");
+            out.write(DBUtils.getQuotedIdentifier(columns.get(0)));
+            out.write(" = ");
+            DBDAttributeBinding column = columns.get(0);
+            Object value = row[0];
+            if (DBUtils.isNullValue(value)) {
+                // just skip it
+                out.write(SQLConstants.NULL_VALUE);
+            } else if (row[0] instanceof DBDContent) {
+                DBDContent content = (DBDContent)row[0];
+                try {
+                    if (column.getValueHandler() instanceof DBDContentValueHandler) {
+                        ((DBDContentValueHandler) column.getValueHandler()).writeStreamValue(session.getProgressMonitor(), session.getDataSource(), column, content, out);
+                    } else {
+                        // Content
+                        // Inline textual content and handle binaries in some special way
+                        DBDContentStorage cs = content.getContents(session.getProgressMonitor());
+                        if (cs != null) {
+                            if (ContentUtils.isTextContent(content)) {
+                                try (Reader contentReader = cs.getContentReader()) {
+                                    writeStringValue(contentReader);
+                                }
+                            } else {
+                                getSite().writeBinaryData(cs);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.warn(e);
+                } finally {
+                    content.release();
+                }
+            } else if (value instanceof File) {
+                out.write("@");
+                out.write(((File)value).getAbsolutePath());
+            } else if (value instanceof String) {
+                writeStringValue((String) value);
+            } else if (value instanceof Number) {
+                out.write(value.toString());
+            } else if (value instanceof Date) {
+                String stringValue = super.getValueDisplayString(column, row[0]);
+                if (getSite().getExportFormat() != DBDDisplayFormat.NATIVE) {
+                    writeStringValue(stringValue);
+                } else {
+                    out.write(stringValue);
+                }
+            } else {
+                out.write(super.getValueDisplayString(column, row[0]));
+            }
+            
+            out.write(";");
+            out.write(rowDelimiter);
+
+            rowCount++;
+        }
+        else{
         boolean firstRow = false;
         if (insertMode == SQLDialect.MultiValueInsertMode.NOT_SUPPORTED || rowCount % rowsInStatement == 0) {
             sqlBuffer.setLength(0);
@@ -201,6 +323,7 @@ public class DataExporterSQL extends StreamExporterAbstract {
             out.write(";");
         }
         out.write(rowDelimiter);
+        }
     }
 
     @Override
