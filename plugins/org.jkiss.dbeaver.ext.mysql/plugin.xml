@@ -111,19 +111,6 @@
                 </folder>
 
                 <folder type="org.jkiss.dbeaver.ext.mysql.model.MySQLInformation" label="%tree.system_info.node.name" icon="#folder_info" description="Database system information">
-                    <folder type="org.jkiss.dbeaver.ext.mysql.model.MySQLParameter" label="%tree.session_status.node.name" icon="#info" description="Session status">
-                        <items label="%tree.variable.node.name" path="sessionStatus" property="sessionStatus" icon="#info" navigable="false" virtual="true"/>
-                    </folder>
-                    <folder type="org.jkiss.dbeaver.ext.mysql.model.MySQLParameter" label="%tree.global_status.node.name" icon="#info" description="Global status">
-                        <items label="%tree.variable.node.name" path="globalStatus" property="globalStatus" icon="#info" navigable="false" virtual="true"/>
-                    </folder>
-                    <folder type="org.jkiss.dbeaver.ext.mysql.model.MySQLParameter" label="%tree.session_variables.node.name" icon="#info" description="Session variables">
-                        <items label="%tree.variable.node.name" path="sessionVariables" property="sessionVariables" icon="#info" navigable="false" virtual="true"/>
-                    </folder>
-                    <folder type="org.jkiss.dbeaver.ext.mysql.model.MySQLParameter" label="%tree.global_variables.node.name" icon="#info" description="Global variables">
-                        <items label="%tree.variable.node.name" path="globalVariables" property="globalVariables" icon="#info" navigable="false" virtual="true"/>
-                    </folder>
-                    
                     <folder type="org.jkiss.dbeaver.ext.mysql.model.MySQLCharset" label="%tree.charsets.node.name" icon="#info" description="Database charsets">
                         <items label="%tree.charset.node.name" path="charsets" property="charsets" icon="#info">
                             <items label="%tree.collation.node.name" path="collations" property="collations" icon="#info" navigable="false"/>

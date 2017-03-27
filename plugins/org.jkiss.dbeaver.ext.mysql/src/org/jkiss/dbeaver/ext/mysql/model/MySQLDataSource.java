@@ -519,14 +519,14 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
             throw new DBException(ex, this);
         }
     }
-
+/*
     public List<MySQLParameter> getSessionStatus(DBRProgressMonitor monitor)
         throws DBException
     {
         return loadParameters(monitor, true, false);
-    }
+    }*/
 
-    public List<MySQLParameter> getGlobalStatus(DBRProgressMonitor monitor)
+    /*public List<MySQLParameter> getGlobalStatus(DBRProgressMonitor monitor)
         throws DBException
     {
         return loadParameters(monitor, true, true);
@@ -542,14 +542,14 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
         throws DBException
     {
         return loadParameters(monitor, false, true);
-    }
+    }*/
 
     public List<MySQLDataSource> getInformation()
     {
         return Collections.singletonList(this);
     }
 
-    private List<MySQLParameter> loadParameters(DBRProgressMonitor monitor, boolean status, boolean global) throws DBException
+    /*private List<MySQLParameter> loadParameters(DBRProgressMonitor monitor, boolean status, boolean global) throws DBException
     {
         try (JDBCSession session = DBUtils.openMetaSession(monitor, this, "Load status")) {
             try (JDBCPreparedStatement dbStat = session.prepareStatement(
@@ -571,7 +571,7 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
         } catch (SQLException ex) {
             throw new DBException(ex, this);
         }
-    }
+    }*/
 
     @Override
     public DBCQueryTransformer createQueryTransformer(@NotNull DBCQueryTransformType type) {
