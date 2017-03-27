@@ -26,8 +26,8 @@ import org.apache.poi.ss.usermodel.Workbook;
  */
 public class DataExporterXLS extends AbstractDataExporterExcel {
 
-	protected Workbook initWorkbook() {
-		return new HSSFWorkbook();	// new workbook
-	}
+    protected Workbook initWorkbook() {
+        return new HSSFWorkbook();	// new workbook
+    }
 
 }

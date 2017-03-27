@@ -55,7 +55,6 @@ public abstract class AbstractDataExporterExcel extends StreamExporterAbstract {
     public void init(IStreamDataExporterSite site) throws DBException
     {
         super.init(site);
-        //rowNum = 1;
     }
 
     @Override
@@ -75,7 +74,7 @@ public abstract class AbstractDataExporterExcel extends StreamExporterAbstract {
 
     private void printHeader()
     {
-    	// XLS/XLSX workbook & spreadsheet creation
+        // XLS/XLSX workbook & spreadsheet creation
         wb = initWorkbook();
         tableName = getSite().getSource().getName();
         sheet = wb.createSheet(tableName);	// add sheet to workbook
@@ -94,13 +93,13 @@ public abstract class AbstractDataExporterExcel extends StreamExporterAbstract {
     @Override
     public void exportRow(DBCSession session, Object[] row) throws DBException, IOException
     {
-    	Row rowOut = sheet.createRow(rowNum);
-    	rowNum++;
-    	
-    	for (int i = 0; i < row.length; i++) {
-    		Cell currentCell = rowOut.createCell(i);
-    		
-    		DBDAttributeBinding column = columns.get(i);
+        Row rowOut = sheet.createRow(rowNum);
+        rowNum++;
+        
+        for (int i = 0; i < row.length; i++) {
+            Cell currentCell = rowOut.createCell(i);
+            
+            DBDAttributeBinding column = columns.get(i);
             if (DBUtils.isNullValue(row[i])) {
                 writeTextCell(null, null);
             } else if (row[i] instanceof DBDContent) {
@@ -126,8 +125,6 @@ public abstract class AbstractDataExporterExcel extends StreamExporterAbstract {
             } else {
                writeTextCell(super.getValueDisplayString(column, row[i]), currentCell);
             }
-    		
-    		
     	}
     }
 
@@ -143,15 +140,15 @@ public abstract class AbstractDataExporterExcel extends StreamExporterAbstract {
 
     private void writeTextCell(@Nullable String value, Cell currentCell)
     {
-    	if (value != null) {
-    		value = value.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;");
-    		currentCell.setCellValue(value);
-    	}
+        if (value != null) {
+            value = value.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;");
+            currentCell.setCellValue(value);
+        }
     }
 
     private void writeCellValue(Reader reader, Cell currentCell) throws IOException
     {
-    	String value = "";
+        String value = "";
         char buffer[] = new char[2000];
         for (;;) {
             int count = reader.read(buffer);
