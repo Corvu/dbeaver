@@ -60,11 +60,11 @@ public class MySQLTable extends MySQLTableBase
         private java.util.Date createTime;
         private MySQLCharset charset;
         private MySQLCollation collation;
-        private MySQLEngine engine;
+        private String engine;
         private long avgRowLength;
         private long dataLength;
 
-        @Property(viewable = true, editable = true, updatable = true, listProvider = EngineListProvider.class, order = 3) public MySQLEngine getEngine() { return engine; }
+        @Property(viewable = true, editable = true, updatable = true, listProvider = EngineListProvider.class, order = 3) public String getEngine() { return engine; }
         @Property(viewable = true, editable = true, updatable = true, order = 4) public long getAutoIncrement() { return autoIncrement; }
         @Property(viewable = false, editable = true, updatable = true, listProvider = CharsetListProvider.class, order = 5) public MySQLCharset getCharset() { return charset; }
         @Property(viewable = false, editable = true, updatable = true, listProvider = CollationListProvider.class, order = 6) public MySQLCollation getCollation() { return collation; }
@@ -75,7 +75,7 @@ public class MySQLTable extends MySQLTableBase
         @Property(category = "Statistics", viewable = true, order = 12) public long getDataLength() { return dataLength; }
         @Property(category = "Statistics", viewable = false, order = 13) public java.util.Date getCreateTime() { return createTime; }
 
-        public void setEngine(MySQLEngine engine) { this.engine = engine; }
+        public void setEngine(String engine) { this.engine = engine; }
         public void setAutoIncrement(long autoIncrement) { this.autoIncrement = autoIncrement; }
         public void setDescription(String description) { this.description = description; }
 
@@ -278,7 +278,7 @@ public class MySQLTable extends MySQLTableBase
                             }
                             additionalInfo.description = desc;
                         }
-                        additionalInfo.engine = dataSource.getEngine(JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_ENGINE));
+                        additionalInfo.engine = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_ENGINE);
                         additionalInfo.rowCount = JDBCUtils.safeGetLong(dbResult, MySQLConstants.COL_TABLE_ROWS);
                         additionalInfo.autoIncrement = JDBCUtils.safeGetLong(dbResult, MySQLConstants.COL_AUTO_INCREMENT);
                         additionalInfo.createTime = JDBCUtils.safeGetTimestamp(dbResult, MySQLConstants.COL_CREATE_TIME);
@@ -509,14 +509,14 @@ public class MySQLTable extends MySQLTableBase
         @Override
         public Object[] getPossibleValues(MySQLTable object)
         {
-            final List<MySQLEngine> engines = new ArrayList<>();
-            for (MySQLEngine engine : object.getDataSource().getEngines()) {
+            /*final List<String> engines = new ArrayList<>();
+            for (String engine : object.getDataSource().getEngines()) {
                 if (engine.getSupport() == MySQLEngine.Support.YES || engine.getSupport() == MySQLEngine.Support.DEFAULT) {
                     engines.add(engine);
                 }
-            }
-            Collections.sort(engines, DBUtils.<MySQLEngine>nameComparator());
-            return engines.toArray(new MySQLEngine[engines.size()]);
+            }*/
+            //Collections.sort(engines, DBUtils.<MySQLEngine>nameComparator());
+            return object.getDataSource().getEngines().toArray(new String[object.getDataSource().getEngines().size()]);
         }
     }
 

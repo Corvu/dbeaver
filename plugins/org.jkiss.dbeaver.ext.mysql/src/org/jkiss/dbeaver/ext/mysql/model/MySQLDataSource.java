@@ -66,13 +66,14 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
     private static final Log log = Log.getLog(MySQLDataSource.class);
 
     private final JDBCBasicDataTypeCache dataTypeCache;
-    private List<MySQLEngine> engines;
+    private List<String> engines;
     private final CatalogCache catalogCache = new CatalogCache();
     private List<MySQLPrivilege> privileges;
     private List<MySQLUser> users;
     private List<MySQLCharset> charsets;
     private Map<String, MySQLCollation> collations;
     private String activeCatalogName;
+	private String defaultEngine;
 
     public MySQLDataSource(DBRProgressMonitor monitor, DBPDataSourceContainer container)
         throws DBException
@@ -211,8 +212,14 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
                 try (JDBCPreparedStatement dbStat = session.prepareStatement("SHOW ENGINES")) {
                     try (JDBCResultSet dbResult = dbStat.executeQuery()) {
                         while (dbResult.next()) {
-                            MySQLEngine engine = new MySQLEngine(this, dbResult);
-                            engines.add(engine);
+                            String engine = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_ENGINE_NAME);
+                            String support = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_ENGINE_SUPPORT);
+                            if (support.equals("YES") || support.equals("DEFAULT")) {                          	
+                            	engines.add(engine);
+                            	if (support.equals("DEFAULT")) {
+                            		defaultEngine = engine;
+                            	}
+                            }
                         }
                     }
                 } catch (SQLException ex) {
@@ -432,24 +439,19 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
         }
     }
 
-    public List<MySQLEngine> getEngines()
+    public List<String> getEngines()
     {
         return engines;
     }
 
-    public MySQLEngine getEngine(String name)
+    /*public MySQLEngine getEngine(String name)
     {
         return DBUtils.findObject(engines, name);
-    }
+    }*/
 
-    public MySQLEngine getDefaultEngine()
+    public String getDefaultEngine()
     {
-        for (MySQLEngine engine : engines) {
-            if (engine.getSupport() == MySQLEngine.Support.DEFAULT) {
-                return engine;
-            }
-        }
-        return null;
+        return defaultEngine;
     }
 
     public Collection<MySQLCharset> getCharsets()
