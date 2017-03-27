@@ -57,8 +57,8 @@ public class MySQLEvent extends MySQLInformation implements MySQLSourceObject {
     private String eventComment;
     private long originator;
     private MySQLCharset characterSetClient;
-    private MySQLCollation collationConnection;
-    private MySQLCollation databaseCollation;
+    private String collationConnection;
+    private String databaseCollation;
 
     public MySQLEvent(MySQLCatalog catalog, ResultSet dbResult)
         throws SQLException
@@ -90,8 +90,8 @@ public class MySQLEvent extends MySQLInformation implements MySQLSourceObject {
         this.eventComment = JDBCUtils.safeGetString(dbResult, "EVENT_COMMENT");
         this.originator = JDBCUtils.safeGetLong(dbResult, "ORIGINATOR");
         this.characterSetClient = getDataSource().getCharset(JDBCUtils.safeGetString(dbResult, "CHARACTER_SET_CLIENT"));
-        this.collationConnection = getDataSource().getCollation(JDBCUtils.safeGetString(dbResult, "COLLATION_CONNECTION"));
-        this.databaseCollation = getDataSource().getCollation(JDBCUtils.safeGetString(dbResult, "DATABASE_COLLATION"));
+        this.collationConnection = JDBCUtils.safeGetString(dbResult, "COLLATION_CONNECTION");
+        this.databaseCollation = JDBCUtils.safeGetString(dbResult, "DATABASE_COLLATION");
     }
 
     @NotNull
@@ -196,12 +196,12 @@ public class MySQLEvent extends MySQLInformation implements MySQLSourceObject {
     }
 
     @Property(category = CAT_DETAILS, order = 42)
-    public MySQLCollation getCollationConnection() {
+    public String getCollationConnection() {
         return collationConnection;
     }
 
     @Property(category = CAT_DETAILS, order = 43)
-    public MySQLCollation getDatabaseCollation() {
+    public String getDatabaseCollation() {
         return databaseCollation;
     }
 

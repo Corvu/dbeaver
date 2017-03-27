@@ -24,7 +24,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 import org.jkiss.dbeaver.ext.mysql.model.MySQLCharset;
-import org.jkiss.dbeaver.ext.mysql.model.MySQLCollation;
 import org.jkiss.dbeaver.ext.mysql.model.MySQLDataSource;
 import org.jkiss.dbeaver.ui.UIUtils;
 import org.jkiss.dbeaver.ui.dialogs.BaseDialog;
@@ -38,7 +37,7 @@ public class MySQLCreateDatabaseDialog extends BaseDialog
     private final MySQLDataSource dataSource;
     private String name;
     private MySQLCharset charset;
-    private MySQLCollation collation;
+    private String collation;
 
     public MySQLCreateDatabaseDialog(Shell parentShell, MySQLDataSource dataSource) {
         super(parentShell, "Create database", null);
@@ -70,12 +69,12 @@ public class MySQLCreateDatabaseDialog extends BaseDialog
         assert charset != null;
 
         final Combo collationCombo = UIUtils.createLabelCombo(group, "Collation", SWT.BORDER | SWT.DROP_DOWN | SWT.READ_ONLY);
-        for (MySQLCollation col : charset.getCollations()) {
-            collationCombo.add(col.getName());
+        for (String col : charset.getCollations()) {
+            collationCombo.add(col);
         }
         collation = charset.getDefaultCollation();
         if (collation != null) {
-            UIUtils.setComboSelection(collationCombo, collation.getName());
+            UIUtils.setComboSelection(collationCombo, collation);
         }
 
         charsetCombo.addModifyListener(new ModifyListener() {
@@ -85,19 +84,19 @@ public class MySQLCreateDatabaseDialog extends BaseDialog
                 assert charset != null;
 
                 collationCombo.removeAll();
-                for (MySQLCollation col : charset.getCollations()) {
-                    collationCombo.add(col.getName());
+                for (String col : charset.getCollations()) {
+                    collationCombo.add(col);
                 }
                 collation = charset.getDefaultCollation();
                 if (collation != null) {
-                    UIUtils.setComboSelection(collationCombo, collation.getName());
+                    UIUtils.setComboSelection(collationCombo, collation);
                 }
             }
         });
         collationCombo.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                collation = charset.getCollation(collationCombo.getText());
+                collation = collationCombo.getText();
             }
         });
 
@@ -112,7 +111,7 @@ public class MySQLCreateDatabaseDialog extends BaseDialog
         return charset;
     }
 
-    public MySQLCollation getCollation() {
+    public String getCollation() {
         return collation;
     }
 

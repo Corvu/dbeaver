@@ -59,7 +59,7 @@ public class MySQLTable extends MySQLTableBase
         private String description;
         private java.util.Date createTime;
         private MySQLCharset charset;
-        private MySQLCollation collation;
+        private String collation;
         private String engine;
         private long avgRowLength;
         private long dataLength;
@@ -67,7 +67,7 @@ public class MySQLTable extends MySQLTableBase
         @Property(viewable = true, editable = true, updatable = true, listProvider = EngineListProvider.class, order = 3) public String getEngine() { return engine; }
         @Property(viewable = true, editable = true, updatable = true, order = 4) public long getAutoIncrement() { return autoIncrement; }
         @Property(viewable = false, editable = true, updatable = true, listProvider = CharsetListProvider.class, order = 5) public MySQLCharset getCharset() { return charset; }
-        @Property(viewable = false, editable = true, updatable = true, listProvider = CollationListProvider.class, order = 6) public MySQLCollation getCollation() { return collation; }
+        @Property(viewable = false, editable = true, updatable = true, listProvider = CollationListProvider.class, order = 6) public String getCollation() { return collation; }
         @Property(viewable = true, editable = true, updatable = true, order = 100) public String getDescription() { return description; }
 
         @Property(category = "Statistics", viewable = true, order = 10) public long getRowCount() { return rowCount; }
@@ -80,7 +80,7 @@ public class MySQLTable extends MySQLTableBase
         public void setDescription(String description) { this.description = description; }
 
         public void setCharset(MySQLCharset charset) { this.charset = charset; this.collation = charset == null ? null : charset.getDefaultCollation(); }
-        public void setCollation(MySQLCollation collation) { this.collation = collation; }
+        public void setCollation(String collation) { this.collation = collation; }
     }
 
     public static class AdditionalInfoValidator implements IPropertyCacheValidator<MySQLTable> {
@@ -282,9 +282,10 @@ public class MySQLTable extends MySQLTableBase
                         additionalInfo.rowCount = JDBCUtils.safeGetLong(dbResult, MySQLConstants.COL_TABLE_ROWS);
                         additionalInfo.autoIncrement = JDBCUtils.safeGetLong(dbResult, MySQLConstants.COL_AUTO_INCREMENT);
                         additionalInfo.createTime = JDBCUtils.safeGetTimestamp(dbResult, MySQLConstants.COL_CREATE_TIME);
-                        additionalInfo.collation = dataSource.getCollation(JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_COLLATION));
+                        additionalInfo.collation = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_COLLATION);
                         if (additionalInfo.collation != null) {
-                            additionalInfo.charset = additionalInfo.collation.getCharset();
+//                            additionalInfo.charset = additionalInfo.collation.getCharset();
+                            additionalInfo.charset = getDataSource().getCharsetByCollation(additionalInfo.collation);
                         }
                         additionalInfo.avgRowLength = JDBCUtils.safeGetLong(dbResult, MySQLConstants.COL_AVG_ROW_LENGTH);
                         additionalInfo.dataLength = JDBCUtils.safeGetLong(dbResult, MySQLConstants.COL_DATA_LENGTH);

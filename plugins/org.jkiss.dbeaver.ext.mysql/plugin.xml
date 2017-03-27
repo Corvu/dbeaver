@@ -111,11 +111,6 @@
                 </folder>
 
                 <folder type="org.jkiss.dbeaver.ext.mysql.model.MySQLInformation" label="%tree.system_info.node.name" icon="#folder_info" description="Database system information">
-                    <folder type="org.jkiss.dbeaver.ext.mysql.model.MySQLCharset" label="%tree.charsets.node.name" icon="#info" description="Database charsets">
-                        <items label="%tree.charset.node.name" path="charsets" property="charsets" icon="#info">
-                            <items label="%tree.collation.node.name" path="collations" property="collations" icon="#info" navigable="false"/>
-                        </items>
-                    </folder>
                     <folder type="org.jkiss.dbeaver.model.access.DBAPrivilege" label="%tree.user_privileges.node.name" icon="#info" description="User privileges">
                         <items label="%tree.privilege.node.name" path="privileges" property="privileges" icon="#info" navigable="false" virtual="true"/>
                     </folder>

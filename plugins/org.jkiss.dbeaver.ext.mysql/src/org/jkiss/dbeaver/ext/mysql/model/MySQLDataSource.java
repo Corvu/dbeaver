@@ -71,7 +71,7 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
     private List<MySQLPrivilege> privileges;
     private List<MySQLUser> users;
     private List<MySQLCharset> charsets;
-    private Map<String, MySQLCollation> collations;
+    private Map<String, MySQLCharset> collations;
     private String activeCatalogName;
 	private String defaultEngine;
 
@@ -253,9 +253,9 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
                                 log.warn("Charset '" + charsetName + "' not found.");
                                 continue;
                             }
-                            MySQLCollation collation = new MySQLCollation(charset, dbResult);
-                            collations.put(collation.getName(), collation);
-                            charset.addCollation(collation);
+                            String collation = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_COLLATION);
+                            collations.put(collation, charset);
+                            charset.addCollation(collation, "Yes".equalsIgnoreCase(JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_DEFAULT)));
                         }
                     }
                 } catch (SQLException ex) {
@@ -469,10 +469,10 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
         return null;
     }
 
-    public MySQLCollation getCollation(String name)
+    /*public MySQLCollation getCollation(String name)
     {
         return collations.get(name);
-    }
+    }*/
 
     public List<MySQLPrivilege> getPrivileges(DBRProgressMonitor monitor)
         throws DBException
@@ -618,6 +618,10 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
     public DBSDataType getLocalDataType(String typeName)
     {
         return dataTypeCache.getCachedObject(typeName);
+    }
+    
+    public MySQLCharset getCharsetByCollation(String collation) {
+    	return collations.get(collation);
     }
 
     static class CatalogCache extends JDBCObjectCache<MySQLDataSource, MySQLCatalog>

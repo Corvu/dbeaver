@@ -83,7 +83,7 @@ public class MySQLCatalogManager extends SQLObjectEditor<MySQLCatalog, MySQLData
             script.append("\nDEFAULT CHARACTER SET ").append(catalog.getDefaultCharset().getName());
         }
         if (catalog.getDefaultCollation() != null) {
-            script.append("\nDEFAULT COLLATE ").append(catalog.getDefaultCollation().getName());
+            script.append("\nDEFAULT COLLATE ").append(catalog.getDefaultCollation());
         }
         actions.add(
             new SQLDatabasePersistAction("Create schema", script.toString()) //$NON-NLS-2$

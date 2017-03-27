@@ -64,7 +64,7 @@ public class MySQLCatalog implements DBSCatalog, DBPSaveableObject, DBPRefreshab
     private MySQLDataSource dataSource;
     private String name;
     private MySQLCharset defaultCharset;
-    private MySQLCollation defaultCollation;
+    private String defaultCollation;
     private String sqlPath;
     private boolean persisted;
 
@@ -75,12 +75,12 @@ public class MySQLCatalog implements DBSCatalog, DBPSaveableObject, DBPRefreshab
         if (dbResult != null) {
             this.name = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_SCHEMA_NAME);
             defaultCharset = dataSource.getCharset(JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_DEFAULT_CHARACTER_SET_NAME));
-            defaultCollation = dataSource.getCollation(JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_DEFAULT_COLLATION_NAME));
+            defaultCollation = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_DEFAULT_COLLATION_NAME);
             sqlPath = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_SQL_PATH);
             persisted = true;
         } else {
             defaultCharset = dataSource.getCharset("utf8");
-            defaultCollation = dataSource.getCollation("utf8_general_ci");
+            defaultCollation = "utf8_general_ci";
             sqlPath = "";
             persisted = false;
         }
@@ -143,12 +143,12 @@ public class MySQLCatalog implements DBSCatalog, DBPSaveableObject, DBPRefreshab
     }
 
     @Property(viewable = true, order = 3)
-    public MySQLCollation getDefaultCollation()
+    public String getDefaultCollation()
     {
         return defaultCollation;
     }
 
-    public void setDefaultCollation(MySQLCollation defaultCollation)
+    public void setDefaultCollation(String defaultCollation)
     {
         this.defaultCollation = defaultCollation;
     }

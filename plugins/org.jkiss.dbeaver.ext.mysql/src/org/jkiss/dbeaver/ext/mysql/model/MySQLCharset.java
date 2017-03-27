@@ -20,7 +20,6 @@ package org.jkiss.dbeaver.ext.mysql.model;
 import org.jkiss.code.NotNull;
 import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.ext.mysql.MySQLConstants;
-import org.jkiss.dbeaver.model.DBUtils;
 import org.jkiss.dbeaver.model.impl.jdbc.JDBCUtils;
 import org.jkiss.dbeaver.model.meta.Property;
 
@@ -38,7 +37,8 @@ public class MySQLCharset extends MySQLInformation {
     private String name;
     private String description;
     private int maxLength;
-    private List<MySQLCollation> collations = new ArrayList<>();
+    private List<String> collations = new ArrayList<>();
+    private String defaultCollation;
 
     public MySQLCharset(MySQLDataSource dataSource, ResultSet dbResult)
         throws SQLException
@@ -55,10 +55,13 @@ public class MySQLCharset extends MySQLInformation {
         this.maxLength = JDBCUtils.safeGetInt(dbResult, MySQLConstants.COL_MAX_LEN);
     }
 
-    void addCollation(MySQLCollation collation)
+    void addCollation(String collation, boolean isDefault)
     {
         collations.add(collation);
-        Collections.sort(collations, DBUtils.nameComparator());
+        Collections.sort(collations);
+        if (isDefault) {
+        	defaultCollation = collation;
+        }
     }
 
     @NotNull
@@ -69,30 +72,25 @@ public class MySQLCharset extends MySQLInformation {
         return name;
     }
 
-    public List<MySQLCollation> getCollations()
+    public List<String> getCollations()
     {
         return collations;
     }
 
     @Property(viewable = true, order = 2)
-    public MySQLCollation getDefaultCollation()
+    public String getDefaultCollation()
     {
-        for (MySQLCollation collation : collations) {
-            if (collation.isDefault()) {
-                return collation;
-            }
-        }
-        return null;
+        return defaultCollation;
     }
 
-    public MySQLCollation getCollation(String name) {
+    /*public MySQLCollation getCollation(String name) {
         for (MySQLCollation collation : collations) {
             if (collation.getName().equals(name)) {
                 return collation;
             }
         }
         return null;
-    }
+    }*/
 
     @Property(viewable = true, order = 3)
     public int getMaxLength()

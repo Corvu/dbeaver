@@ -108,7 +108,7 @@ public class MySQLTableManager extends SQLTableManager<MySQLTableBase, MySQLCata
                     ddl.append("\nDEFAULT CHARSET=").append(additionalInfo.getCharset().getName()); //$NON-NLS-1$
                 }
                 if ((!table.isPersisted() || tableProps.getProperty("collation") != null) && additionalInfo.getCollation() != null) { //$NON-NLS-1$
-                    ddl.append("\nCOLLATE=").append(additionalInfo.getCollation().getName()); //$NON-NLS-1$
+                    ddl.append("\nCOLLATE=").append(additionalInfo.getCollation()); //$NON-NLS-1$
                 }
                 if ((!table.isPersisted() || tableProps.getProperty(DBConstants.PROP_ID_DESCRIPTION) != null) && table.getDescription() != null) {
                     ddl.append("\nCOMMENT='").append(SQLUtils.escapeString(table.getDescription())).append("'"); //$NON-NLS-1$ //$NON-NLS-2$
