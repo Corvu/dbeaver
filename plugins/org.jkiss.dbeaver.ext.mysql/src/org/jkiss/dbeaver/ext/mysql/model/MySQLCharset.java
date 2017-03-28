@@ -35,15 +35,12 @@ import java.util.List;
 public class MySQLCharset implements DBPNamedObject, Comparable<MySQLCharset>{
 
     private String name;
-//    private String description;
-//    private int maxLength;
     private List<String> collations = new ArrayList<>();
     private String defaultCollation;
 
     public MySQLCharset(ResultSet dbResult)
         throws SQLException
     {
-        //super(dataSource);
         this.loadInfo(dbResult);
     }
 
@@ -51,8 +48,6 @@ public class MySQLCharset implements DBPNamedObject, Comparable<MySQLCharset>{
         throws SQLException
     {
         this.name = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_CHARSET);
-//        this.description = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_DESCRIPTION);
-//        this.maxLength = JDBCUtils.safeGetInt(dbResult, MySQLConstants.COL_MAX_LEN);
     }
 
     void addCollation(String collation, boolean isDefault)
@@ -77,7 +72,6 @@ public class MySQLCharset implements DBPNamedObject, Comparable<MySQLCharset>{
         return collations;
     }
 
-//    @Property(viewable = true, order = 2)
     public String getDefaultCollation()
     {
         return defaultCollation;
@@ -98,28 +92,5 @@ public class MySQLCharset implements DBPNamedObject, Comparable<MySQLCharset>{
 	public String toString() {
 		return name;
 	}
-
-    /*public MySQLCollation getCollation(String name) {
-        for (MySQLCollation collation : collations) {
-            if (collation.getName().equals(name)) {
-                return collation;
-            }
-        }
-        return null;
-    }*/
-
-    /*@Property(viewable = true, order = 3)
-    public int getMaxLength()
-    {
-        return maxLength;
-    }*/
-
-    /*@Nullable
-    @Override
-    @Property(viewable = true, order = 100)
-    public String getDescription()
-    {
-        return description;
-    }*/
 
 }

@@ -444,11 +444,6 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
         return engines;
     }
 
-    /*public MySQLEngine getEngine(String name)
-    {
-        return DBUtils.findObject(engines, name);
-    }*/
-
     public String getDefaultEngine()
     {
         return defaultEngine;
@@ -468,11 +463,6 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
         }
         return null;
     }
-
-    /*public MySQLCollation getCollation(String name)
-    {
-        return collations.get(name);
-    }*/
 
     public List<MySQLPrivilege> getPrivileges(DBRProgressMonitor monitor)
         throws DBException
@@ -519,59 +509,11 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
             throw new DBException(ex, this);
         }
     }
-/*
-    public List<MySQLParameter> getSessionStatus(DBRProgressMonitor monitor)
-        throws DBException
-    {
-        return loadParameters(monitor, true, false);
-    }*/
-
-    /*public List<MySQLParameter> getGlobalStatus(DBRProgressMonitor monitor)
-        throws DBException
-    {
-        return loadParameters(monitor, true, true);
-    }
-
-    public List<MySQLParameter> getSessionVariables(DBRProgressMonitor monitor)
-        throws DBException
-    {
-        return loadParameters(monitor, false, false);
-    }
-
-    public List<MySQLParameter> getGlobalVariables(DBRProgressMonitor monitor)
-        throws DBException
-    {
-        return loadParameters(monitor, false, true);
-    }*/
 
     public List<MySQLDataSource> getInformation()
     {
         return Collections.singletonList(this);
     }
-
-    /*private List<MySQLParameter> loadParameters(DBRProgressMonitor monitor, boolean status, boolean global) throws DBException
-    {
-        try (JDBCSession session = DBUtils.openMetaSession(monitor, this, "Load status")) {
-            try (JDBCPreparedStatement dbStat = session.prepareStatement(
-                "SHOW " +
-                    (global ? "GLOBAL " : "") +
-                    (status ? "STATUS" : "VARIABLES"))) {
-                try (JDBCResultSet dbResult = dbStat.executeQuery()) {
-                    List<MySQLParameter> parameters = new ArrayList<>();
-                    while (dbResult.next()) {
-                        MySQLParameter parameter = new MySQLParameter(
-                            this,
-                            JDBCUtils.safeGetString(dbResult, "variable_name"),
-                            JDBCUtils.safeGetString(dbResult, "value"));
-                        parameters.add(parameter);
-                    }
-                    return parameters;
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DBException(ex, this);
-        }
-    }*/
 
     @Override
     public DBCQueryTransformer createQueryTransformer(@NotNull DBCQueryTransformType type) {

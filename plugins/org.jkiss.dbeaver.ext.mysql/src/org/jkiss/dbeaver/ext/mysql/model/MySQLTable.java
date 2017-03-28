@@ -284,7 +284,6 @@ public class MySQLTable extends MySQLTableBase
                         additionalInfo.createTime = JDBCUtils.safeGetTimestamp(dbResult, MySQLConstants.COL_CREATE_TIME);
                         additionalInfo.collation = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_COLLATION);
                         if (additionalInfo.collation != null) {
-//                            additionalInfo.charset = additionalInfo.collation.getCharset();
                             additionalInfo.charset = getDataSource().getCharsetByCollation(additionalInfo.collation);
                         }
                         additionalInfo.avgRowLength = JDBCUtils.safeGetLong(dbResult, MySQLConstants.COL_AVG_ROW_LENGTH);
@@ -510,13 +509,6 @@ public class MySQLTable extends MySQLTableBase
         @Override
         public Object[] getPossibleValues(MySQLTable object)
         {
-            /*final List<String> engines = new ArrayList<>();
-            for (String engine : object.getDataSource().getEngines()) {
-                if (engine.getSupport() == MySQLEngine.Support.YES || engine.getSupport() == MySQLEngine.Support.DEFAULT) {
-                    engines.add(engine);
-                }
-            }*/
-            //Collections.sort(engines, DBUtils.<MySQLEngine>nameComparator());
             return object.getDataSource().getEngines().toArray(new String[object.getDataSource().getEngines().size()]);
         }
     }

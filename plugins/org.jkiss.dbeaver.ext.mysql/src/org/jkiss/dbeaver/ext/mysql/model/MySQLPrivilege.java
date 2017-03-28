@@ -80,7 +80,6 @@ public class MySQLPrivilege implements DBAPrivilege
         return name;
     }
 
-//    @Property(viewable = true, order = 2)
     public String getContext()
     {
         return context;
