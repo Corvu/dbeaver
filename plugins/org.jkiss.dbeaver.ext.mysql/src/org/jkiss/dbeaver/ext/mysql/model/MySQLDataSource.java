@@ -233,7 +233,7 @@ public class MySQLDataSource extends JDBCDataSource implements DBSObjectSelector
                 try (JDBCPreparedStatement dbStat = session.prepareStatement("SHOW CHARSET")) {
                     try (JDBCResultSet dbResult = dbStat.executeQuery()) {
                         while (dbResult.next()) {
-                            MySQLCharset charset = new MySQLCharset(this, dbResult);
+                            MySQLCharset charset = new MySQLCharset(dbResult);
                             charsets.add(charset);
                         }
                     }

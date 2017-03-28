@@ -18,8 +18,8 @@
 package org.jkiss.dbeaver.ext.mysql.model;
 
 import org.jkiss.code.NotNull;
-import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.ext.mysql.MySQLConstants;
+import org.jkiss.dbeaver.model.DBPNamedObject;
 import org.jkiss.dbeaver.model.impl.jdbc.JDBCUtils;
 import org.jkiss.dbeaver.model.meta.Property;
 
@@ -32,18 +32,18 @@ import java.util.List;
 /**
  * MySQLCharset
  */
-public class MySQLCharset extends MySQLInformation {
+public class MySQLCharset implements DBPNamedObject, Comparable<MySQLCharset>{
 
     private String name;
-    private String description;
-    private int maxLength;
+//    private String description;
+//    private int maxLength;
     private List<String> collations = new ArrayList<>();
     private String defaultCollation;
 
-    public MySQLCharset(MySQLDataSource dataSource, ResultSet dbResult)
+    public MySQLCharset(ResultSet dbResult)
         throws SQLException
     {
-        super(dataSource);
+        //super(dataSource);
         this.loadInfo(dbResult);
     }
 
@@ -51,8 +51,8 @@ public class MySQLCharset extends MySQLInformation {
         throws SQLException
     {
         this.name = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_CHARSET);
-        this.description = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_DESCRIPTION);
-        this.maxLength = JDBCUtils.safeGetInt(dbResult, MySQLConstants.COL_MAX_LEN);
+//        this.description = JDBCUtils.safeGetString(dbResult, MySQLConstants.COL_DESCRIPTION);
+//        this.maxLength = JDBCUtils.safeGetInt(dbResult, MySQLConstants.COL_MAX_LEN);
     }
 
     void addCollation(String collation, boolean isDefault)
@@ -77,11 +77,27 @@ public class MySQLCharset extends MySQLInformation {
         return collations;
     }
 
-    @Property(viewable = true, order = 2)
+//    @Property(viewable = true, order = 2)
     public String getDefaultCollation()
     {
         return defaultCollation;
     }
+
+	@Override
+	public int compareTo(MySQLCharset o) {
+		if (this == o) return 0;
+		
+		if (name == null && o.name != null) {
+			return -1;
+		}
+		
+		return name.compareTo(o.name);
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 
     /*public MySQLCollation getCollation(String name) {
         for (MySQLCollation collation : collations) {
@@ -92,18 +108,18 @@ public class MySQLCharset extends MySQLInformation {
         return null;
     }*/
 
-    @Property(viewable = true, order = 3)
+    /*@Property(viewable = true, order = 3)
     public int getMaxLength()
     {
         return maxLength;
-    }
+    }*/
 
-    @Nullable
+    /*@Nullable
     @Override
     @Property(viewable = true, order = 100)
     public String getDescription()
     {
         return description;
-    }
+    }*/
 
 }
