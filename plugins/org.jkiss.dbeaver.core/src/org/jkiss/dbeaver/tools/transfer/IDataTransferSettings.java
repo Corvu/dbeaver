@@ -19,6 +19,7 @@ package org.jkiss.dbeaver.tools.transfer;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.operation.IRunnableContext;
+import org.jkiss.dbeaver.tools.transfer.wizard.DataTransferImportSettings;
 import org.jkiss.dbeaver.tools.transfer.wizard.DataTransferSettings;
 
 /**
@@ -27,7 +28,8 @@ import org.jkiss.dbeaver.tools.transfer.wizard.DataTransferSettings;
 public interface IDataTransferSettings {
 
     void loadSettings(IRunnableContext runnableContext, DataTransferSettings dataTransferSettings, IDialogSettings dialogSettings);
-
+    void loadSettings(IRunnableContext runnableContext, DataTransferImportSettings dataTransferSettings, IDialogSettings dialogSettings);
+    
     void saveSettings(IDialogSettings dialogSettings);
 
 }

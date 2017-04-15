@@ -36,6 +36,7 @@
     <extension-point id="org.jkiss.dbeaver.resultset.presentation" name="Result set presentations" schema="schema/org.jkiss.dbeaver.resultset.presentation.exsd"/>
     <extension-point id="org.jkiss.dbeaver.resultset.panel" name="Result set panels" schema="schema/org.jkiss.dbeaver.resultset.panel.exsd"/>
     <extension-point id="org.jkiss.dbeaver.tools" name="Tools" schema="schema/org.jkiss.dbeaver.tools.exsd"/>
+    <extension-point id="org.jkiss.dbeaver.dataTransferImport" name="Data Transfer Import provider" schema="schema/org.jkiss.dbeaver.dataTransferImport.exsd"/>
 
     <extension point="org.eclipse.core.contenttype.contentTypes">
         <content-type
@@ -483,7 +484,7 @@
         <handler commandId="org.jkiss.dbeaver.core.import.data" class="org.jkiss.dbeaver.tools.transfer.handlers.DataImportHandler">
             <enabledWhen>
                 <with variable="selection">
-                    <count value="1"/>
+                    <count value="+"/>
                     <iterate operator="and">
                         <adapt type="org.jkiss.dbeaver.model.struct.DBSDataManipulator"/>
                     </iterate>
@@ -2938,6 +2939,57 @@
             <sourceType type="org.jkiss.dbeaver.model.struct.DBSDataContainer"/>
             <page class="org.jkiss.dbeaver.tools.transfer.database.DatabaseConsumerPageMapping"/>
             <page class="org.jkiss.dbeaver.tools.transfer.database.DatabaseConsumerPageLoadSettings"/>
+        </node>
+    </extension>
+    
+    <extension point="org.jkiss.dbeaver.dataTransferImport">
+        <node type="producer"
+              id="database_producer"
+              class="org.jkiss.dbeaver.tools.transfer.database.DatabaseTransferProducer"
+              icon="icons/table.png"
+              label="%dataTransfer.producer.database.name"
+              description="%dataTransfer.producer.database.description"
+              settings="org.jkiss.dbeaver.tools.transfer.database.DatabaseProducerSettings">
+            <sourceType type="org.jkiss.dbeaver.model.struct.DBSDataContainer"/>
+            <page class="org.jkiss.dbeaver.tools.transfer.database.DatabaseProducerImportPageExtractSettings"/>
+        </node>
+
+        <node type="consumer"
+              id="stream_consumer"
+              class="org.jkiss.dbeaver.tools.transfer.stream.StreamTransferConsumer"
+              icon="icons/file/file.png"
+              label="%dataTransfer.consumer.stream.name"
+              description="%dataTransfer.consumer.stream.description"
+              settings="org.jkiss.dbeaver.tools.transfer.stream.StreamConsumerSettings">
+            <page class="org.jkiss.dbeaver.tools.transfer.stream.StreamConsumerImportPageSettings"/>
+            <page class="org.jkiss.dbeaver.tools.transfer.stream.StreamConsumerImportPageOutput"/>
+
+            <processor
+                    id="stream.csv_import"
+                    class="org.jkiss.dbeaver.tools.transfer.stream.impl.DataExporterCSV"
+                    description="%dataTransfer.processor.csv.description"
+                    icon="icons/misc/csv.png"
+                    label="%dataTransfer.processor.csv.name">
+                <propertyGroup label="General">
+                    <property id="extension" label="File extension" defaultValue="csv"/>
+                    <property id="delimiter" label="%dataTransfer.processor.csv.property.delimiter.name" type="string" description="%dataTransfer.processor.csv.property.delimiter.description" defaultValue="," required="true"/>
+                    <property id="header" label="%dataTransfer.processor.csv.property.header.name" type="string" description="%dataTransfer.processor.csv.property.header.description" defaultValue="top" required="true" validValues="none,top,bottom,both"/>
+                    <property id="escape" label="%dataTransfer.processor.csv.property.escape.name" type="string" description="%dataTransfer.processor.csv.property.escape.description" defaultValue="quotes" required="true" validValues="quotes,escape"/>
+                    <property id="quoteChar" label="%dataTransfer.processor.csv.property.quoteChar.name" type="string" description="%dataTransfer.processor.csv.property.quoteChar.description" defaultValue="&quot;" required="false"/>
+                </propertyGroup>
+            </processor>
+        </node>
+
+        <node type="consumer"
+              id="database_consumer"
+              class="org.jkiss.dbeaver.tools.transfer.database.DatabaseTransferConsumer"
+              icon="icons/table.png"
+              label="%dataTransfer.consumer.database.name"
+              description="%dataTransfer.consumer.database.description"
+              settings="org.jkiss.dbeaver.tools.transfer.database.DatabaseConsumerSettings">
+            <sourceType type="org.jkiss.dbeaver.model.struct.DBSDataContainer"/>
+            <page class="org.jkiss.dbeaver.tools.transfer.database.DatabaseConsumerImportPageMapping"/>
+            <page class="org.jkiss.dbeaver.tools.transfer.database.DatabaseConsumerImportPageLoadSettings"/>
         </node>
     </extension>
 

@@ -22,6 +22,7 @@ import org.eclipse.jface.operation.IRunnableContext;
 import org.jkiss.dbeaver.model.data.DBDDataFormatterProfile;
 import org.jkiss.dbeaver.registry.formatter.DataFormatterRegistry;
 import org.jkiss.dbeaver.tools.transfer.IDataTransferSettings;
+import org.jkiss.dbeaver.tools.transfer.wizard.DataTransferImportSettings;
 import org.jkiss.dbeaver.tools.transfer.wizard.DataTransferSettings;
 import org.jkiss.dbeaver.utils.GeneralUtils;
 import org.jkiss.utils.CommonUtils;
@@ -144,6 +145,51 @@ public class StreamConsumerSettings implements IDataTransferSettings {
 
     @Override
     public void loadSettings(IRunnableContext runnableContext, DataTransferSettings dataTransferSettings, IDialogSettings dialogSettings) {
+        if (!CommonUtils.isEmpty(dialogSettings.get("lobExtractType"))) {
+            try {
+                lobExtractType = LobExtractType.valueOf(dialogSettings.get("lobExtractType"));
+            } catch (IllegalArgumentException e) {
+                lobExtractType = LobExtractType.SKIP;
+            }
+        }
+        if (!CommonUtils.isEmpty(dialogSettings.get("lobEncoding"))) {
+            try {
+                lobEncoding = LobEncoding.valueOf(dialogSettings.get("lobEncoding"));
+            } catch (IllegalArgumentException e) {
+                lobEncoding = LobEncoding.HEX;
+            }
+        }
+
+        if (!CommonUtils.isEmpty(dialogSettings.get("outputFolder"))) {
+            outputFolder = dialogSettings.get("outputFolder");
+        }
+        if (!CommonUtils.isEmpty(dialogSettings.get("outputFilePattern"))) {
+            outputFilePattern = dialogSettings.get("outputFilePattern");
+        }
+        if (!CommonUtils.isEmpty(dialogSettings.get("outputEncoding"))) {
+            outputEncoding = dialogSettings.get("outputEncoding");
+        }
+        if (!CommonUtils.isEmpty(dialogSettings.get("outputEncodingBOM"))) {
+            outputEncodingBOM = dialogSettings.getBoolean("outputEncodingBOM");
+        }
+        if (!CommonUtils.isEmpty(dialogSettings.get("outputClipboard"))) {
+            outputClipboard = dialogSettings.getBoolean("outputClipboard");
+        }
+
+        if (!CommonUtils.isEmpty(dialogSettings.get("compressResults"))) {
+            compressResults = dialogSettings.getBoolean("compressResults");
+        }
+        if (dialogSettings.get("openFolderOnFinish") != null) {
+            openFolderOnFinish = dialogSettings.getBoolean("openFolderOnFinish");
+        }
+
+        if (!CommonUtils.isEmpty(dialogSettings.get("formatterProfile"))) {
+            formatterProfile = DataFormatterRegistry.getInstance().getCustomProfile(dialogSettings.get("formatterProfile"));
+        }
+    }
+    
+    @Override
+    public void loadSettings(IRunnableContext runnableContext, DataTransferImportSettings dataTransferSettings, IDialogSettings dialogSettings) {
         if (!CommonUtils.isEmpty(dialogSettings.get("lobExtractType"))) {
             try {
                 lobExtractType = LobExtractType.valueOf(dialogSettings.get("lobExtractType"));

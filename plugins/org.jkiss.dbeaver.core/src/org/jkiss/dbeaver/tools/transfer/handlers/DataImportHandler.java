@@ -17,43 +17,34 @@
  */
 package org.jkiss.dbeaver.tools.transfer.handlers;
 
-import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.ui.commands.IElementUpdater;
-import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.menus.UIElement;
-import org.jkiss.dbeaver.core.DBeaverCore;
-import org.jkiss.dbeaver.model.navigator.DBNDatabaseNode;
-import org.jkiss.dbeaver.model.navigator.DBNModel;
 import org.jkiss.dbeaver.model.navigator.DBNNode;
 import org.jkiss.dbeaver.model.struct.DBSDataContainer;
 import org.jkiss.dbeaver.model.struct.DBSDataManipulator;
-import org.jkiss.dbeaver.model.struct.DBSObject;
-import org.jkiss.dbeaver.model.struct.DBSObjectContainer;
-import org.jkiss.dbeaver.tools.transfer.IDataTransferConsumer;
 import org.jkiss.dbeaver.tools.transfer.IDataTransferNode;
-import org.jkiss.dbeaver.tools.transfer.IDataTransferProducer;
 import org.jkiss.dbeaver.tools.transfer.database.DatabaseTransferConsumer;
 import org.jkiss.dbeaver.tools.transfer.database.DatabaseTransferProducer;
-import org.jkiss.dbeaver.ui.dialogs.BrowseObjectDialog;
 import org.jkiss.dbeaver.ui.navigator.NavigatorUtils;
 import org.jkiss.dbeaver.utils.RuntimeUtils;
 
 import java.util.Map;
 
-public class DataImportHandler extends DataTransferHandler implements IElementUpdater {
+public class DataImportHandler extends DataTransferImportHandler implements IElementUpdater {
 
-    @Override
+	@Override
     protected IDataTransferNode adaptTransferNode(Object object)
     {
-        final DBSDataManipulator adapted = RuntimeUtils.getObjectAdapter(object, DBSDataManipulator.class);
+        final DBSDataContainer adapted = RuntimeUtils.getObjectAdapter(object, DBSDataContainer.class);
         if (adapted != null) {
-            return new DatabaseTransferConsumer(adapted);
+            // return new DatabaseTransferConsumer(adapted);    // FIXME
+            return new DatabaseTransferProducer(adapted);
         } else {
             return null;
         }
     }
 
-    @Override
+    /*	@Override
     protected IDataTransferProducer chooseProducer(ExecutionEvent event, IDataTransferConsumer consumer)
     {
         final DBNModel navigatorModel = DBeaverCore.getInstance().getNavigatorModel();
@@ -73,7 +64,7 @@ public class DataImportHandler extends DataTransferHandler implements IElementUp
             }
         }
         return null;
-    }
+    }*/
 
     @Override
     public void updateElement(UIElement element, Map parameters)

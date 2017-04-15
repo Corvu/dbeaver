@@ -20,6 +20,7 @@ package org.jkiss.dbeaver.tools.transfer.database;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.jkiss.dbeaver.tools.transfer.IDataTransferSettings;
+import org.jkiss.dbeaver.tools.transfer.wizard.DataTransferImportSettings;
 import org.jkiss.dbeaver.tools.transfer.wizard.DataTransferSettings;
 import org.jkiss.utils.CommonUtils;
 
@@ -89,6 +90,29 @@ public class DatabaseProducerSettings implements IDataTransferSettings {
 
     @Override
     public void loadSettings(IRunnableContext runnableContext, DataTransferSettings dataTransferSettings, IDialogSettings dialogSettings)
+    {
+        if (dialogSettings.get("extractType") != null) {
+            try {
+                extractType = ExtractType.valueOf(dialogSettings.get("extractType"));
+            } catch (IllegalArgumentException e) {
+                extractType = ExtractType.SINGLE_QUERY;
+            }
+        }
+        try {
+            segmentSize = dialogSettings.getInt("segmentSize");
+        } catch (NumberFormatException e) {
+            segmentSize = DEFAULT_SEGMENT_SIZE;
+        }
+        if (!CommonUtils.isEmpty(dialogSettings.get("openNewConnections"))) {
+            openNewConnections = dialogSettings.getBoolean("openNewConnections");
+        }
+        if (!CommonUtils.isEmpty(dialogSettings.get("queryRowCount"))) {
+            queryRowCount = dialogSettings.getBoolean("queryRowCount");
+        }
+    }
+    
+    @Override
+    public void loadSettings(IRunnableContext runnableContext, DataTransferImportSettings dataTransferSettings, IDialogSettings dialogSettings)
     {
         if (dialogSettings.get("extractType") != null) {
             try {
