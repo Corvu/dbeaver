@@ -40,9 +40,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-class DataTransferPagePipes extends ActiveWizardPage<DataTransferWizard> {
+class DataTransferImportPagePipes extends ActiveWizardPage<DataTransferImportWizard> {
 
     private TableViewer consumersTable;
+    private boolean isImport = true;
 
     private static class TransferTarget {
         DataTransferNodeDescriptor consumer;
@@ -55,7 +56,7 @@ class DataTransferPagePipes extends ActiveWizardPage<DataTransferWizard> {
         }
     }
 
-    DataTransferPagePipes() {
+    DataTransferImportPagePipes() {
         super(CoreMessages.data_transfer_wizard_init_name);
         setTitle(CoreMessages.data_transfer_wizard_init_title);
         setDescription(CoreMessages.data_transfer_wizard_init_description);
@@ -150,7 +151,7 @@ class DataTransferPagePipes extends ActiveWizardPage<DataTransferWizard> {
             {
                 widgetSelected(e);
                 if (isPageComplete()) {
-                    getWizard().getContainer().showPage(getWizard().getNextPage(DataTransferPagePipes.this));
+                    getWizard().getContainer().showPage(getWizard().getNextPage(DataTransferImportPagePipes.this));
                 }
             }
         });
@@ -181,11 +182,11 @@ class DataTransferPagePipes extends ActiveWizardPage<DataTransferWizard> {
 
     private void loadConsumers()
     {
-        DataTransferSettings settings = getWizard().getSettings();
+        DataTransferImportSettings settings = getWizard().getSettings();
         Collection<Class<?>> objectTypes = settings.getObjectTypes();
 
         List<TransferTarget> transferTargets = new ArrayList<>();
-        for (DataTransferNodeDescriptor consumer : DataTransferRegistry.getInstance().getAvailableConsumers(objectTypes)) {
+        for (DataTransferNodeDescriptor consumer : DataTransferImportRegistry.getInstance().getAvailableConsumers(objectTypes)) {
             Collection<DataTransferProcessorDescriptor> processors = consumer.getAvailableProcessors(objectTypes);
             if (CommonUtils.isEmpty(processors)) {
                 transferTargets.add(new TransferTarget(consumer, null));

@@ -21,7 +21,7 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.IExportWizard;
+import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.DBException;
@@ -36,14 +36,14 @@ import org.jkiss.dbeaver.ui.UIUtils;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class DataTransferWizard extends Wizard implements IExportWizard {
+public class DataTransferImportWizard extends Wizard implements IImportWizard {
 
-    private static final String RS_EXPORT_WIZARD_DIALOG_SETTINGS = "DataTransfer";//$NON-NLS-1$
+    private static final String RS_EXPORT_WIZARD_DIALOG_SETTINGS = "DataTransferImport";//$NON-NLS-1$
 
-    private DataTransferSettings settings;
+    private DataTransferImportSettings settings;
 
-    public DataTransferWizard(@Nullable IDataTransferProducer[] producers, @Nullable IDataTransferConsumer[] consumers) {
-        this.settings = new DataTransferSettings(producers, consumers);
+    public DataTransferImportWizard(@Nullable IDataTransferProducer[] producers, @Nullable IDataTransferConsumer[] consumers) {
+        this.settings = new DataTransferImportSettings(producers, consumers);
         loadSettings();
     }
 
@@ -55,28 +55,32 @@ public class DataTransferWizard extends Wizard implements IExportWizard {
         settings.loadFrom(DBeaverUI.getActiveWorkbenchWindow(), section);
     }
 
-    public DataTransferSettings getSettings()
+    public DataTransferImportSettings getSettings()
     {
         return settings;
     }
 
     public <T extends IDataTransferSettings> T getPageSettings(IWizardPage page, Class<T> type)
     {
+    	System.out.println("page settings DataTransferImportWizard");
         return type.cast(settings.getNodeSettings(page));
     }
 
     @Override
     public void addPages() {
+    	
+    	System.out.println("add pages DataTransferImportWizard");
         super.addPages();
         if (settings.isConsumerOptional()) {
-            addPage(new DataTransferPagePipes());
+            addPage(new DataTransferImportPagePipes());
         }
         settings.addWizardPages(this);
-        addPage(new DataTransferPageFinal());
+        addPage(new DataTransferImportPageFinal());
     }
 
     @Override
     public void init(IWorkbench workbench, IStructuredSelection currentSelection) {
+    	System.out.println("init DataTransferImportWizard");
         setWindowTitle(CoreMessages.data_transfer_wizard_name);
         setNeedsProgressMonitor(true);
     }
@@ -85,6 +89,7 @@ public class DataTransferWizard extends Wizard implements IExportWizard {
     @Override
     public IWizardPage getNextPage(IWizardPage page)
     {
+    	System.out.println("next page DataTransferImportWizard");
         IWizardPage[] pages = getPages();
         int curIndex = -1;
         for (int i = 0; i < pages.length; i++) {
@@ -141,7 +146,7 @@ public class DataTransferWizard extends Wizard implements IExportWizard {
             if (settings.isPageValid(page) && !page.isPageComplete()) {
                 return false;
             }
-            if (page instanceof DataTransferPageFinal && !((DataTransferPageFinal) page).isActivated()) {
+            if (page instanceof DataTransferImportPageFinal && !((DataTransferImportPageFinal) page).isActivated()) {
                 return false;
             }
         }
@@ -188,7 +193,7 @@ public class DataTransferWizard extends Wizard implements IExportWizard {
             totalJobs = settings.getMaxJobCount();
         }
         for (int i = 0; i < totalJobs; i++) {
-        	new DataTransferJob(settings).schedule();
+            new DataTransferImportJob(settings).schedule();
         }
     }
 

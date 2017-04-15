@@ -39,6 +39,7 @@ import org.jkiss.dbeaver.model.struct.DBSDataManipulator;
 import org.jkiss.dbeaver.model.struct.DBSObjectContainer;
 import org.jkiss.dbeaver.tools.transfer.IDataTransferConsumer;
 import org.jkiss.dbeaver.tools.transfer.IDataTransferSettings;
+import org.jkiss.dbeaver.tools.transfer.wizard.DataTransferImportSettings;
 import org.jkiss.dbeaver.tools.transfer.wizard.DataTransferPipe;
 import org.jkiss.dbeaver.tools.transfer.wizard.DataTransferSettings;
 import org.jkiss.dbeaver.ui.UIUtils;
@@ -170,6 +171,39 @@ public class DatabaseConsumerSettings implements IDataTransferSettings {
 
     @Override
     public void loadSettings(IRunnableContext runnableContext, DataTransferSettings dataTransferSettings, IDialogSettings dialogSettings)
+    {
+        containerNodePath = dialogSettings.get("container");
+        if (dialogSettings.get("openNewConnections") != null) {
+            openNewConnections = dialogSettings.getBoolean("openNewConnections");
+        }
+        if (dialogSettings.get("useTransactions") != null) {
+            useTransactions = dialogSettings.getBoolean("useTransactions");
+        }
+        if (dialogSettings.get("commitAfterRows") != null) {
+            commitAfterRows = dialogSettings.getInt("commitAfterRows");
+        }
+        if (dialogSettings.get("openTableOnFinish") != null) {
+            openTableOnFinish = dialogSettings.getBoolean("openTableOnFinish");
+        }
+        {
+            List<DataTransferPipe> dataPipes = dataTransferSettings.getDataPipes();
+            if (!dataPipes.isEmpty()) {
+                IDataTransferConsumer consumer = dataPipes.get(0).getConsumer();
+                if (consumer instanceof DatabaseTransferConsumer) {
+                    final DBSDataManipulator targetObject = ((DatabaseTransferConsumer) consumer).getTargetObject();
+                    if (targetObject != null) {
+                        containerNode = DBeaverCore.getInstance().getNavigatorModel().findNode(
+                            targetObject.getParentObject()
+                        );
+                    }
+                }
+            }
+            checkContainerConnection(runnableContext);
+        }
+    }
+    
+    @Override
+    public void loadSettings(IRunnableContext runnableContext, DataTransferImportSettings dataTransferSettings, IDialogSettings dialogSettings)
     {
         containerNodePath = dialogSettings.get("container");
         if (dialogSettings.get("openNewConnections") != null) {
