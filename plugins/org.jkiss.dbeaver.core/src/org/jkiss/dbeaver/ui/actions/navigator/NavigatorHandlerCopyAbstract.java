@@ -42,6 +42,7 @@ import org.jkiss.dbeaver.ui.dnd.DatabaseObjectTransfer;
 import org.jkiss.dbeaver.ui.dnd.TreeNodeTransfer;
 import org.jkiss.dbeaver.utils.GeneralUtils;
 import org.jkiss.dbeaver.utils.RuntimeUtils;
+import org.jkiss.dbeaver.ui.CopyMode;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -69,6 +70,8 @@ public abstract class NavigatorHandlerCopyAbstract extends AbstractHandler imple
 
         return null;
     }
+    
+    protected abstract CopyMode getCopyMode();
 
     private void copySelection(IWorkbenchWindow workbenchWindow, IWorkbenchPart activePart, ISelection selection) {
         ClipboardData clipboardData = new ClipboardData();
@@ -76,7 +79,8 @@ public abstract class NavigatorHandlerCopyAbstract extends AbstractHandler imple
         {
             IClipboardSource clipboardSource = activePart.getAdapter(IClipboardSource.class);
             if (clipboardSource != null) {
-                clipboardSource.addClipboardData(clipboardData);
+                //clipboardSource.addClipboardData(clipboardData);
+            	clipboardSource.addClipboardData(getCopyMode(), clipboardData);
             }
         }
 

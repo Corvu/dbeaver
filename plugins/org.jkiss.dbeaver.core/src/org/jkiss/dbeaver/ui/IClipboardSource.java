@@ -22,7 +22,9 @@ package org.jkiss.dbeaver.ui;
  * IClipboardSource
  */
 public interface IClipboardSource {
+	
+	void addClipboardData(CopyMode mode, ClipboardData clipboardData);
 
-    void addClipboardData(ClipboardData clipboardData);
+    //void addClipboardData(ClipboardData clipboardData);
 
 }

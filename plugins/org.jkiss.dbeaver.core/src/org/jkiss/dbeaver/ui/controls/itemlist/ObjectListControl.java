@@ -41,10 +41,13 @@ import org.jkiss.dbeaver.Log;
 import org.jkiss.dbeaver.core.CoreMessages;
 import org.jkiss.dbeaver.core.DBeaverUI;
 import org.jkiss.dbeaver.model.DBPImage;
+import org.jkiss.dbeaver.model.DBValueFormatting;
 import org.jkiss.dbeaver.model.IDataSourceContainerProvider;
+import org.jkiss.dbeaver.model.data.DBDDisplayFormat;
 import org.jkiss.dbeaver.model.preferences.DBPPropertyDescriptor;
 import org.jkiss.dbeaver.model.runtime.AbstractJob;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
+import org.jkiss.dbeaver.model.runtime.VoidProgressMonitor;
 import org.jkiss.dbeaver.runtime.properties.*;
 import org.jkiss.dbeaver.ui.*;
 import org.jkiss.dbeaver.ui.controls.ObjectViewerRenderer;
@@ -750,10 +753,20 @@ public abstract class ObjectListControl<OBJECT_TYPE> extends ProgressPageControl
     // Clipboard
 
     @Override
-    public void addClipboardData(ClipboardData clipboardData) {
+    //public void addClipboardData(ClipboardData clipboardData) {
+    public void addClipboardData(CopyMode mode, ClipboardData clipboardData) {
         // Cope selected cells
-        final String selectedText = getRenderer().getSelectedText();
-        if (!CommonUtils.isEmpty(selectedText)) {
+    	String selectedText;
+    	if (mode == CopyMode.ADVANCED) {
+    		selectedText = copyGridToText();
+	        //final String selectedText = getRenderer().getSelectedText();
+	        if (!CommonUtils.isEmpty(selectedText)) {
+	            clipboardData.addTransfer(TextTransfer.getInstance(), selectedText);
+	        }
+    	} else {
+    		selectedText = getRenderer().getSelectedText();
+    	}
+    	if (!CommonUtils.isEmpty(selectedText)) {
             clipboardData.addTransfer(TextTransfer.getInstance(), selectedText);
         }
     }
@@ -761,7 +774,42 @@ public abstract class ObjectListControl<OBJECT_TYPE> extends ProgressPageControl
     //////////////////////////////////////////////////////
     // Editor activation
 
-    private class EditorActivationStrategy extends ColumnViewerEditorActivationStrategy {
+    private String copyGridToText() {
+        StringBuilder buf = new StringBuilder();
+        int columnsCount = columnController.getColumnsCount();
+        {
+            // Header
+            for (int i = 0; i < columnsCount; i++) {
+                ObjectColumn column = getColumnByIndex(i);
+                if (i > 0) buf.append("\t");
+                buf.append(column.displayName);
+            }
+            buf.append("\n");
+        }
+        List<OBJECT_TYPE> elementList = itemsViewer.getStructuredSelection().toList();
+        for (OBJECT_TYPE element : elementList) {
+            Object object = getObjectValue(element);
+            for (int i = 0; i < columnsCount; i++) {
+                ObjectPropertyDescriptor property = getColumnByIndex(i).getProperty(object);
+                try {
+                    Object cellValue = property == null ? null : property.readValue(object, VoidProgressMonitor.INSTANCE);
+                    if (i > 0) buf.append("\t");
+                    String strValue = DBValueFormatting.getDefaultValueDisplayString(cellValue, DBDDisplayFormat.UI);
+                    if (strValue.contains("\n") || strValue.contains("\t")) {
+                        strValue = '"' + strValue + '"';
+                    }
+                    buf.append(strValue);
+                } catch (Throwable e) {
+                    // ignore
+                }
+            }
+            buf.append("\n");
+        }
+
+        return buf.toString();
+	}
+
+	private class EditorActivationStrategy extends ColumnViewerEditorActivationStrategy {
 
         public EditorActivationStrategy(ColumnViewer viewer) {
             super(viewer);

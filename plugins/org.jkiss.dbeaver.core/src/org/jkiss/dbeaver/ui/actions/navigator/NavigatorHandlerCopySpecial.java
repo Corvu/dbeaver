@@ -23,8 +23,15 @@ import org.jkiss.dbeaver.core.CoreMessages;
 import org.jkiss.dbeaver.model.DBPEvaluationContext;
 import org.jkiss.dbeaver.model.DBPQualifiedObject;
 import org.jkiss.dbeaver.utils.RuntimeUtils;
+import org.jkiss.dbeaver.ui.CopyMode;
+
 
 public class NavigatorHandlerCopySpecial extends NavigatorHandlerCopyAbstract {
+	
+	@Override
+	protected CopyMode getCopyMode() {
+		return CopyMode.ADVANCED;
+	}
 
     @Override
     protected String getObjectDisplayString(Object object)
